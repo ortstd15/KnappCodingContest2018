@@ -174,7 +174,7 @@ public class Solution {
                     try {
                         Location l = getClosestEmpty(currentAisle, expected.getLocation());
                     } catch (Exception e) {
-                        Logger.getLogger(e.getMessage());
+                        System.out.println(e.getMessage());
                     }
 
 
@@ -201,10 +201,10 @@ public class Solution {
                 }
 
                 try {
-                    expected = getExpectedContainer(o);
+                    expected = getClosestExpected(o, shuttle.getCurrentPosition());
                     location = expected.getLocation();
                 } catch (Exception e) {
-                    Logger.getLogger(e.getMessage());
+                    System.out.println(e.getMessage());
                 }
 
             }
