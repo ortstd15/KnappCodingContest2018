@@ -74,7 +74,7 @@ public class Solution {
         for (Container c : containers) {
             long help = warehouse.calcMoveCost(position, c.getLocation().getPosition());
             if (o.getRemainingQuantity() > c.getQuantity()) {
-                help += 1000;
+                help += 10000;
             }
             if (help < distance) {
                 distance = help;
@@ -104,10 +104,7 @@ public class Solution {
 
     private Location getClosestEmpty(int aisle, Location location) {
 
-        List<Location> locations = new ArrayList<>();
-        for (Location loc : warehouse.getAisle(aisle).getLocations()) {
-            locations.add(loc);
-        }
+        List<Location> locations = getEmptyLocationsInAisle(aisle);
         Location loc = null;
         long distance = Long.MAX_VALUE;
 
@@ -153,8 +150,8 @@ public class Solution {
 
         for (Order o : orders) {
 
-            Container expected = null;
-            Location location = null;
+            Container expected;
+            Location location;
 
             System.out.println(o.getOrderCode());
 
@@ -171,14 +168,15 @@ public class Solution {
                     int currentAisle = shuttle.getCurrentPosition().getAisle();
 
                     ws.pickOrder(o);
-                    System.out.println("remQ = " + o.getRemainingQuantity());
+                    //System.out.println("remQ = " + o.getRemainingQuantity());
 
                     //Location l = getEmptyLocationsInAisle().get(i);
                     try {
                         Location l = getClosestEmpty(currentAisle, expected.getLocation());
                     } catch (Exception e) {
-                        Logger.getLogger(e.getStackTrace().toString());
+                        Logger.getLogger(e.getMessage());
                     }
+
 
                     shuttle.moveToPosition(location.getPosition());
                     shuttle.storeTo(location);
@@ -194,7 +192,7 @@ public class Solution {
                         l = getClosestEmpty(currentAisle, expected.getLocation());
 
                     } catch (Exception e) {
-                        Logger.getLogger(e.getStackTrace().toString());
+                        Logger.getLogger(e.getMessage());
                     }
                     shuttle.loadFrom(location, location.getContainers().get(0));
                     shuttle.moveToPosition(l.getPosition());
@@ -206,12 +204,11 @@ public class Solution {
                     expected = getExpectedContainer(o);
                     location = expected.getLocation();
                 } catch (Exception e) {
-                    Logger.getLogger(e.getStackTrace().toString());
+                    Logger.getLogger(e.getMessage());
                 }
 
-
             }
-            i++;
+
         }
 
 
