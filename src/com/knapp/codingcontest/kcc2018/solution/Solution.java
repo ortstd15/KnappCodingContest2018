@@ -25,7 +25,6 @@ import com.knapp.codingcontest.kcc2018.warehouse.aisle.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * This is the code YOU have to provide
@@ -58,15 +57,15 @@ public class Solution {
 
     private Container getClosestExpected(Order o, Position position) {
         List<Container> containers = new ArrayList<>();
-        for (int i = 0; i < warehouse.getAisles().length; i++) {
-            for (Location loc : warehouse.getAisle(i).getLocations()) {
-                for (int j = 0; j < loc.getContainers().size(); j++) {
-                    if (o.getProductCode().equals(loc.getContainers().get(j).getProductCode())) {
-                        containers.add(loc.getContainers().get(j));
-                    }
-                }
+
+        for (Container c : warehouse.getAllContainers()) {
+
+            if (o.getProductCode().equals(c.getProductCode()) && c.getQuantity() > 0) {
+                containers.add(c);
             }
         }
+
+
         long distance = Long.MAX_VALUE;
 
         Container closestExpected = null;
@@ -78,11 +77,11 @@ public class Solution {
             }
             if (help < distance) {
                 distance = help;
-
                 closestExpected = c;
             }
 
         }
+
 
         return closestExpected;
     }
@@ -147,19 +146,23 @@ public class Solution {
         Collection<Container> allContainers = warehouse.getAllContainers();
         List<Location> locations = new ArrayList<>();
 
-
+        int i = 0;
         for (Order o : orders) {
 
             Container expected;
             Location location;
 
-            System.out.println(o.getOrderCode());
+            //System.out.println(o.getOrderCode());
+
+            if (o.getRemainingQuantity() == 0) {
+                continue;
+            }
 
             expected = getClosestExpected(o, shuttle.getCurrentPosition());
             location = expected.getLocation();
 
-            int i = 0;
             while (o.getRemainingQuantity() > 0) {
+
 
                 shuttle.moveToPosition(location.getPosition());
                 if (location.getContainers().get(0).equals(expected)) {
@@ -171,16 +174,21 @@ public class Solution {
                     //System.out.println("remQ = " + o.getRemainingQuantity());
 
                     //Location l = getEmptyLocationsInAisle().get(i);
+                    int j = i + 1;
+                    while (expected.getQuantity() > 0 && j < orders.size() && orders.get(j).getProductCode().equals(expected.getProductCode())) {
+                        ws.pickOrder(orders.get(j));
+                        j++;
+                    }
                     try {
                         Location l = getClosestEmpty(currentAisle, expected.getLocation());
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        //System.out.println(e.getStackTrace());
                     }
 
 
                     shuttle.moveToPosition(location.getPosition());
                     shuttle.storeTo(location);
-                    if (o.getProductCode().equals(orders.get(i + 1).getProductCode())) {
+                    if (i + 1 < orders.size() && o.getProductCode().equals(orders.get(i + 1).getProductCode())) {
                         shuttle.moveToPosition(expected.getLocation().getPosition());
                     } else {
                         shuttle.moveToPosition(ws);
@@ -192,7 +200,7 @@ public class Solution {
                         l = getClosestEmpty(currentAisle, expected.getLocation());
 
                     } catch (Exception e) {
-                        Logger.getLogger(e.getMessage());
+                        //System.out.println(e.getStackTrace());
                     }
                     shuttle.loadFrom(location, location.getContainers().get(0));
                     shuttle.moveToPosition(l.getPosition());
@@ -200,15 +208,17 @@ public class Solution {
                     continue;
                 }
 
+
                 try {
                     expected = getClosestExpected(o, shuttle.getCurrentPosition());
                     location = expected.getLocation();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
 
+                } catch (Exception e) {
+
+                }
             }
 
+            i++;
         }
 
 
