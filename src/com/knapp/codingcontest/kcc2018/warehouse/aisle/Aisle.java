@@ -19,7 +19,7 @@ import java.util.HashSet;
 import com.knapp.codingcontest.kcc2018.warehouse.LocationNotFoundException;
 
 public class Aisle {
-  public static enum Side {
+  public enum Side {
     Left, Right, //
     _Undefined_, // used for shuttle and workstation
     ;

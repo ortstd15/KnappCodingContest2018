@@ -24,7 +24,7 @@ import com.knapp.codingcontest.kcc2018.warehouse.aisle.Position;
 public final class WarehouseOperations {
   // ----------------------------------------------------------------------------
 
-  public static enum Operation {
+  public enum Operation {
     MovePerLocation, //
     MovePerAisle, //
     LoadStore, //
